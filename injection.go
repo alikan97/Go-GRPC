@@ -44,6 +44,7 @@ func inject(d *repository.DataSources) (*gin.Engine, error) {
 	}
 
 	refreshSecret := envFile["REFRESH_SECRET"]
+
 	tokenService := services.NewTokenService(&services.TSConfig{
 		PrivKey:       privKey,
 		Pubkey:        pubKey,

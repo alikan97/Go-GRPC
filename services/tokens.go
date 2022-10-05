@@ -55,7 +55,7 @@ func generateRefreshToken(uid uuid.UUID, key string) (*RefreshToken, error) {
 	tokenID, err := uuid.NewRandom()
 
 	if err != nil {
-		log.Printf("Failed to generate a refresh token")
+		log.Printf("Failed to generate a refresh token, %v", err)
 		return nil, err
 	}
 
@@ -68,7 +68,7 @@ func generateRefreshToken(uid uuid.UUID, key string) (*RefreshToken, error) {
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	ss, err := token.SignedString([]byte(key))
 
 	if err != nil {
