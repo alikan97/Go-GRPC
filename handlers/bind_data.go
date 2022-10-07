@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/alikan97/Go-GRPC/model"
 	"github.com/gin-gonic/gin"
@@ -18,6 +20,16 @@ type invalidArgument struct {
 // helper function to return false if data is not bound
 func bindData(c *gin.Context, req interface{}) bool {
 	// bind incoming json to struct and check for validation errors
+	if c.ContentType() != "application/json" {
+		msg := fmt.Sprintf("%s only accepts Content-Type as application/json", c.FullPath())
+
+		err := model.NewBadRequest(msg)
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err,
+		})
+	}
+
 	if err := c.ShouldBind(req); err != nil {
 		log.Printf("Error binding data: %+v\n", err)
 

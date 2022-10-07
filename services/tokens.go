@@ -2,6 +2,7 @@ package services
 
 import (
 	"crypto/rsa"
+	"fmt"
 	"log"
 	"time"
 
@@ -10,27 +11,27 @@ import (
 	"github.com/google/uuid"
 )
 
-type IDTokenCustomClaims struct {
+type idTokenCustomClaims struct {
 	User *model.User `json:"user"`
 	jwt.StandardClaims
 }
 
-type RefreshToken struct {
+type refreshTokenData struct {
 	SS        string
-	ID        string
+	ID        uuid.UUID
 	ExpiresIn time.Duration
 }
 
-type RefreshTokenCustomClaims struct {
+type refreshTokenCustomClaims struct {
 	UID uuid.UUID `json:"uid"`
 	jwt.StandardClaims
 }
 
-func generateIDToken(u *model.User, key *rsa.PrivateKey) (string, error) {
+func generateIDToken(u *model.User, key *rsa.PrivateKey, exp int64) (string, error) {
 	unixTime := time.Now().Unix()
-	tokenExp := unixTime + 60*15 // 15mins
+	tokenExp := unixTime + exp // 15mins
 
-	claims := IDTokenCustomClaims{
+	claims := idTokenCustomClaims{
 		User: u,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  unixTime,
@@ -49,9 +50,9 @@ func generateIDToken(u *model.User, key *rsa.PrivateKey) (string, error) {
 	return ss, nil
 }
 
-func generateRefreshToken(uid uuid.UUID, key string) (*RefreshToken, error) {
+func generateRefreshToken(uid uuid.UUID, key string, exp int64) (*refreshTokenData, error) {
 	currentTime := time.Now()
-	tokenExp := currentTime.AddDate(0, 0, 3)
+	tokenExp := currentTime.Add(time.Duration(exp) * time.Second)
 	tokenID, err := uuid.NewRandom()
 
 	if err != nil {
@@ -59,7 +60,7 @@ func generateRefreshToken(uid uuid.UUID, key string) (*RefreshToken, error) {
 		return nil, err
 	}
 
-	claims := RefreshTokenCustomClaims{
+	claims := refreshTokenCustomClaims{
 		UID: uid,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  currentTime.Unix(),
@@ -76,9 +77,55 @@ func generateRefreshToken(uid uuid.UUID, key string) (*RefreshToken, error) {
 		return nil, err
 	}
 
-	return &RefreshToken{
+	return &refreshTokenData{
 		SS:        ss,
-		ID:        tokenID.String(),
+		ID:        tokenID,
 		ExpiresIn: tokenExp.Sub(currentTime),
 	}, nil
+}
+
+func validateIDToken(tokenString string, key *rsa.PublicKey) (*idTokenCustomClaims, error) {
+	claims := &idTokenCustomClaims{}
+
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
+		return key, nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if !token.Valid {
+		return nil, fmt.Errorf("ID Token is invalid")
+	}
+
+	claims, ok := token.Claims.(*idTokenCustomClaims)
+	if !ok {
+		return nil, fmt.Errorf("ID Token valid but couldnt parse claims")
+	}
+
+	return claims, nil
+}
+
+func validateRefreshToken(tokenString string, key string) (*refreshTokenCustomClaims, error) {
+	claims := &refreshTokenCustomClaims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(key), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if !token.Valid {
+		return nil, fmt.Errorf("Refresh token is invalid")
+	}
+
+	claims, ok := token.Claims.(*refreshTokenCustomClaims)
+
+	if !ok {
+		return nil, fmt.Errorf("Refresh token valid but couldn't parse claims")
+	}
+
+	return claims, nil
 }

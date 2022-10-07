@@ -9,12 +9,13 @@ import (
 type Type string
 
 const (
-	Authorization   Type = "AUTHORIZATION"
-	BadRequest      Type = "BADREQUEST"
-	Conflict        Type = "CONFLICT"
-	Internal        Type = "INTERNAL"
-	NotFound        Type = "NOTFOUND"
-	PayloadTooLarge Type = "PAYLOADTOOLARGE"
+	Authorization      Type = "AUTHORIZATION"
+	BadRequest         Type = "BAD_REQUEST"
+	Conflict           Type = "CONFLICT"
+	Internal           Type = "INTERNAL"
+	NotFound           Type = "NOTFOUND"
+	PayloadTooLarge    Type = "PAYLOAD_TOO_LARGE"
+	ServiceUnavailable Type = "SERVICE_UNAVAILABLE"
 )
 
 type Error struct {
@@ -39,6 +40,8 @@ func (e *Error) Status() int {
 		return http.StatusNotFound
 	case PayloadTooLarge:
 		return http.StatusRequestEntityTooLarge
+	case ServiceUnavailable:
+		return http.StatusServiceUnavailable
 	default:
 		return http.StatusInternalServerError
 	}
@@ -86,5 +89,11 @@ func NewPayloadTooLarge(maxBodysize int64, contentLength int64) *Error {
 	return &Error{
 		Type:    PayloadTooLarge,
 		Message: fmt.Sprintf("Max payload size of %v exceeded. Actual payload size: %v", maxBodysize, contentLength),
+	}
+}
+func NewServiceUnavailable() *Error {
+	return &Error{
+		Type:    ServiceUnavailable,
+		Message: fmt.Sprint("Service unavailable"),
 	}
 }

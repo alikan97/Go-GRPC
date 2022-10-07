@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"strconv"
+	"time"
 
 	"github.com/alikan97/Go-GRPC/handlers"
 	"github.com/alikan97/Go-GRPC/repository"
@@ -15,6 +17,7 @@ import (
 func inject(d *repository.DataSources) (*gin.Engine, error) {
 	envFile, _ := godotenv.Read(".env")
 	userRepo := repository.NewUserRepository(d.DB)
+	tokenRepo := repository.NewTokenRepository(d.RedisClient)
 
 	userService := services.NewUserService(&services.UConfig{
 		UseRepository: userRepo,
@@ -42,21 +45,45 @@ func inject(d *repository.DataSources) (*gin.Engine, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not parse public key, %w", err)
 	}
-
 	refreshSecret := envFile["REFRESH_SECRET"]
 
+	idTokenExp := envFile["ID_TOKEN_EXP"]
+	refreshTokenExp := envFile["REFRESH_TOKEN_EXP"]
+
+	tokenExp, err := strconv.ParseInt(idTokenExp, 0, 64)
+	if err != nil {
+		return nil, fmt.Errorf("Could not parse ID Token EXP as integer, %w", err)
+	}
+
+	refreshExp, err := strconv.ParseInt(refreshTokenExp, 0, 64)
+	if err != nil {
+		return nil, fmt.Errorf("Could not parse Refresh Token EXP as integer, %w", err)
+	}
+
 	tokenService := services.NewTokenService(&services.TSConfig{
-		PrivKey:       privKey,
-		Pubkey:        pubKey,
-		RefreshSecret: refreshSecret,
+		TokenRepository:      tokenRepo,
+		PrivKey:              privKey,
+		Pubkey:               pubKey,
+		RefreshSecret:        refreshSecret,
+		IDExpirationSec:      tokenExp,
+		RefreshExpirationSec: refreshExp,
 	})
 
 	router := gin.Default()
 
+	baseURL := envFile["BASE_URL"]
+	ht := envFile["HANDLER_TIMEOUT"]
+	handlerTimeout, err := strconv.ParseInt(ht, 0, 64)
+	if err != nil {
+		return nil, fmt.Errorf("Could not parse handler timeout as integer, %w", err)
+	}
+
 	handlers.NewHandler(&handlers.Config{
-		R:            router,
-		UserService:  userService,
-		TokenService: tokenService,
+		R:               router,
+		UserService:     userService,
+		TokenService:    tokenService,
+		BaseURL:         baseURL,
+		TimeoutDuration: time.Duration(time.Duration(handlerTimeout) * time.Second),
 	})
 
 	return router, nil
