@@ -10,17 +10,17 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-type redisTokenRepository struct {
+type redisRepo struct {
 	Redis *redis.Client
 }
 
 func NewTokenRepository(redisClient *redis.Client) model.TokenRepository {
-	return &redisTokenRepository{
+	return &redisRepo{
 		Redis: redisClient,
 	}
 }
 
-func (r *redisTokenRepository) SetRefreshToken(ctx context.Context, userID string, tokenID string, expiresIn time.Duration) error {
+func (r *redisRepo) SetRefreshToken(ctx context.Context, userID string, tokenID string, expiresIn time.Duration) error {
 	key := fmt.Sprintf("%s:%s", userID, tokenID)
 
 	if err := r.Redis.Set(ctx, key, 0, expiresIn).Err(); err != nil {
@@ -31,7 +31,7 @@ func (r *redisTokenRepository) SetRefreshToken(ctx context.Context, userID strin
 	return nil
 }
 
-func (r *redisTokenRepository) DeleteRefreshToken(ctx context.Context, userID string, prevTokenID string) error {
+func (r *redisRepo) DeleteRefreshToken(ctx context.Context, userID string, prevTokenID string) error {
 	key := fmt.Sprintf("%s:%s", userID, prevTokenID)
 
 	result := r.Redis.Del(ctx, key)
@@ -49,7 +49,7 @@ func (r *redisTokenRepository) DeleteRefreshToken(ctx context.Context, userID st
 	return nil
 }
 
-func (r *redisTokenRepository) DeleteUserRefreshToken(ctx context.Context, userID string) error {
+func (r *redisRepo) DeleteUserRefreshToken(ctx context.Context, userID string) error {
 	pattern := fmt.Sprintf("%s*", userID)
 
 	// Scan for this pattern

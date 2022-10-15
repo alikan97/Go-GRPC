@@ -1,17 +1,21 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"strconv"
 	"time"
 
 	"github.com/alikan97/Go-GRPC/handlers"
+	pb "github.com/alikan97/Go-GRPC/proto"
 	"github.com/alikan97/Go-GRPC/repository"
 	"github.com/alikan97/Go-GRPC/services"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"google.golang.org/grpc"
 )
 
 func inject(d *repository.DataSources) (*gin.Engine, error) {
@@ -78,7 +82,17 @@ func inject(d *repository.DataSources) (*gin.Engine, error) {
 		return nil, fmt.Errorf("Could not parse handler timeout as integer, %w", err)
 	}
 
+	serverAddress := flag.String("address", "localhost:8080", "the server address")
+
+	conn, err := grpc.Dial(*serverAddress, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+
+	c := pb.NewCryptoClient(conn)
+
 	handlers.NewHandler(&handlers.Config{
+		Client:          c,
 		R:               router,
 		UserService:     userService,
 		TokenService:    tokenService,

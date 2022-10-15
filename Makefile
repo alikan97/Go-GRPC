@@ -6,8 +6,11 @@ gen-proto:
 clean-proto:
 	rm proto/*.go
 
+build:
+	go build -o ./out .
+
 run:
-	go run main.go
+	go run .
 
 new-migration:
 	migrate create -ext sql -dir migrations/ -seq -digits 5 $(filename)

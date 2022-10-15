@@ -7,6 +7,7 @@ import (
 
 	"github.com/alikan97/Go-GRPC/handlers/middleware"
 	"github.com/alikan97/Go-GRPC/model"
+	pb "github.com/alikan97/Go-GRPC/proto"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,10 +15,12 @@ import (
 type Handler struct {
 	UserService  model.UserService
 	TokenService model.TokenService
+	Client       pb.CryptoClient
 }
 
 // Config will hold sercvices that will eventually be injkected into this handler layer on handler initialization
 type Config struct {
+	Client          pb.CryptoClient
 	R               *gin.Engine
 	UserService     model.UserService
 	TokenService    model.TokenService
@@ -31,6 +34,7 @@ func NewHandler(c *Config) {
 	h := &Handler{
 		UserService:  c.UserService,
 		TokenService: c.TokenService,
+		Client:       c.Client,
 	}
 
 	g := c.R.Group(c.BaseURL)
@@ -41,6 +45,10 @@ func NewHandler(c *Config) {
 		g.GET("/account", middleware.AuthUser(h.TokenService), h.account)
 		g.POST("/signout", middleware.AuthUser(h.TokenService), h.Signout)
 		g.PUT("/updatedetails", middleware.AuthUser(h.TokenService), h.UpdateDetails)
+		g.GET("/getallassets", middleware.AuthUser(h.TokenService), h.GetAllAssets)
+		g.GET("/getassbysymbol", middleware.AuthUser(h.TokenService), h.getAssetBySymbol)
+		g.GET("/getrecenttrades", middleware.AuthUser(h.TokenService), h.getRecentTrades)
+		g.GET("/getquote", middleware.AuthUser(h.TokenService), h.getCurrentQuote)
 	} else {
 		g.PUT("/updatedetails", h.UpdateDetails)
 		g.GET("/account", h.account)
@@ -51,8 +59,20 @@ func NewHandler(c *Config) {
 	g.GET("/allassets", h.GetAllAssets)
 }
 
-func (h *Handler) GetAllAssets(c *gin.Context) {
+func (h *Handler) getAssetBySymbol(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"Hlllo": "All assets",
+		"Hlllo": "Get asset",
+	})
+}
+
+func (h *Handler) getRecentTrades(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"Hlllo": "Get recent trade",
+	})
+}
+
+func (h *Handler) getCurrentQuote(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"Hlllo": "Get quote",
 	})
 }

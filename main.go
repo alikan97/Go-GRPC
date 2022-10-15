@@ -10,22 +10,7 @@ import (
 	"time"
 
 	"github.com/alikan97/Go-GRPC/repository"
-	"github.com/gin-gonic/gin"
 )
-
-type book struct {
-	ID    string `json:"id"`
-	Title string `json:"title"`
-}
-
-var books = []book{
-	{ID: "1", Title: "Gerwat hatsnu"},
-	{ID: "2", Title: "dwemkme"},
-}
-
-func getBooks(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, books)
-}
 
 func main() {
 	db, err := repository.InitDB()
@@ -41,7 +26,7 @@ func main() {
 	}
 
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":8081",
 		Handler: router,
 	}
 
@@ -70,15 +55,6 @@ func main() {
 		log.Fatalf("server forced to shutdown: %v\n", err)
 	}
 	// Set up a connection to the server.
-	// serverAddress := flag.String("address", "localhost:8080", "the server address")
-
-	// conn, err := grpc.Dial(*serverAddress, grpc.WithInsecure())
-	// if err != nil {
-	// 	log.Fatalf("did not connect: %v", err)
-	// }
-
-	// defer conn.Close()
-	// c := pb.NewCryptoClient(conn)
 
 	// r, err := c.GetAllAsset(context.Background(), &emptypb.Empty{})
 	// if err != nil {
