@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/alikan97/Go-GRPC/handlers/middleware"
@@ -45,34 +44,12 @@ func NewHandler(c *Config) {
 		g.GET("/account", middleware.AuthUser(h.TokenService), h.account)
 		g.POST("/signout", middleware.AuthUser(h.TokenService), h.Signout)
 		g.PUT("/updatedetails", middleware.AuthUser(h.TokenService), h.UpdateDetails)
-		g.GET("/getallassets", middleware.AuthUser(h.TokenService), h.GetAllAssets)
-		g.GET("/getassbysymbol", middleware.AuthUser(h.TokenService), h.getAssetBySymbol)
-		g.GET("/getrecenttrades", middleware.AuthUser(h.TokenService), h.getRecentTrades)
-		g.GET("/getquote", middleware.AuthUser(h.TokenService), h.getCurrentQuote)
-	} else {
-		g.PUT("/updatedetails", h.UpdateDetails)
-		g.GET("/account", h.account)
+		g.GET("/allassets", middleware.AuthUser(h.TokenService), h.GetAllAssets)
+		g.GET("/asset", middleware.AuthUser(h.TokenService), h.getAssetBySymbol)
+		g.GET("/recenttrades", middleware.AuthUser(h.TokenService), h.getRecentTrades)
+		g.GET("/quote", middleware.AuthUser(h.TokenService), h.getCurrentQuote)
+		g.POST("/login", h.Signin)
+		g.POST("/register", h.Signup)
 		g.POST("/tokens", h.Tokens)
 	}
-	g.POST("/signup", h.Signup)
-	g.POST("/signin", h.Signin)
-	g.GET("/allassets", h.GetAllAssets)
-}
-
-func (h *Handler) getAssetBySymbol(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"Hlllo": "Get asset",
-	})
-}
-
-func (h *Handler) getRecentTrades(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"Hlllo": "Get recent trade",
-	})
-}
-
-func (h *Handler) getCurrentQuote(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"Hlllo": "Get quote",
-	})
 }
