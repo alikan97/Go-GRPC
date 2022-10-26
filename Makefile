@@ -1,4 +1,6 @@
 PORT = 5432
+PWD = $(shell pwd)
+ACCPATH = $(PWD)/
 
 gen-proto:
 	protoc --go_out=. --go_opt=Mproto/crypto.proto=example.com/grpc/crypto --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/crypto.proto
@@ -23,12 +25,9 @@ migrate-up:
 swagger:
 	GO111MODULE=off swagger generate spec -o ./swagger.yaml --scan-models
 
-build-lambda:
-	GOOS=linux go build lambda/main.go -o main
-
 ## export PATH=$PATH:/usr/local/go/bin
 
 create-keypair:
 	@echo "Creating an rsa 256 key pair"
-	openssl genpkey -algorithm RSA -out ./keyfiles/rsa_private.pem -pkeyopt rsa_keygen_bits:2048
-	openssl rsa -in ./keyfiles/rsa_private.pem -pubout -out ./keyfiles/rsa_public.pem
+	openssl genpkey -algorithm RSA -out ./rsa_private.pem -pkeyopt rsa_keygen_bits:2048
+	openssl rsa -in ./rsa_private.pem -pubout -out ./rsa_public.pem

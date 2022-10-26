@@ -54,11 +54,4 @@ func main() {
 	if err := srv.Shutdown(ctx); err != nil {
 		log.Fatalf("server forced to shutdown: %v\n", err)
 	}
-	// Set up a connection to the server.
-
-	// r, err := c.GetAllAsset(context.Background(), &emptypb.Empty{})
-	// if err != nil {
-	// 	log.Fatalf("could not greet: %v", err)
-	// }
-	// log.Printf("####### get server Greeting response: %v", r.GetResponse())
 }

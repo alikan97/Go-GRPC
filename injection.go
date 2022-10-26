@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"strconv"
 	"time"
 
@@ -14,12 +15,16 @@ import (
 	"github.com/alikan97/Go-GRPC/services"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 )
 
 func inject(d *repository.DataSources) (*gin.Engine, error) {
-	envFile, _ := godotenv.Read(".env")
+	// envFile, errs := godotenv.Read(".env")
+
+	// if errs != nil {
+	// 	fmt.Printf("Error reading in env file, %v", errs)
+	// }
+
 	userRepo := repository.NewUserRepository(d.DB)
 	tokenRepo := repository.NewTokenRepository(d.RedisClient)
 
@@ -28,7 +33,7 @@ func inject(d *repository.DataSources) (*gin.Engine, error) {
 	})
 
 	//load rsa key file
-	privKeyFile := envFile["PRIV_KEY_FILE"]
+	privKeyFile := os.Getenv("PRIV_KEY_FILE")
 	priv, err := ioutil.ReadFile(privKeyFile)
 
 	if err != nil {
@@ -39,7 +44,7 @@ func inject(d *repository.DataSources) (*gin.Engine, error) {
 		return nil, fmt.Errorf("could not parse private key, %w", err)
 	}
 
-	pubKeyFile := envFile["PUB_KEY_FILE"]
+	pubKeyFile := os.Getenv("PUB_KEY_FILE")
 	pub, err := ioutil.ReadFile(pubKeyFile)
 
 	if err != nil {
@@ -49,10 +54,10 @@ func inject(d *repository.DataSources) (*gin.Engine, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not parse public key, %w", err)
 	}
-	refreshSecret := envFile["REFRESH_SECRET"]
+	refreshSecret := os.Getenv("REFRESH_SECRET")
 
-	idTokenExp := envFile["ID_TOKEN_EXP"]
-	refreshTokenExp := envFile["REFRESH_TOKEN_EXP"]
+	idTokenExp := os.Getenv("ID_TOKEN_EXP")
+	refreshTokenExp := os.Getenv("REFRESH_TOKEN_EXP")
 
 	tokenExp, err := strconv.ParseInt(idTokenExp, 0, 64)
 	if err != nil {
@@ -75,14 +80,16 @@ func inject(d *repository.DataSources) (*gin.Engine, error) {
 
 	router := gin.Default()
 
-	baseURL := envFile["BASE_URL"]
-	ht := envFile["HANDLER_TIMEOUT"]
+	baseURL := os.Getenv("BASE_URL")
+	ht := os.Getenv("HANDLER_TIMEOUT")
 	handlerTimeout, err := strconv.ParseInt(ht, 0, 64)
 	if err != nil {
 		return nil, fmt.Errorf("Could not parse handler timeout as integer, %w", err)
 	}
 
-	serverAddress := flag.String("address", "localhost:8080", "the server address")
+	grpcAddress := os.Getenv("GRPC_SERVER_ADDRESS")
+
+	serverAddress := flag.String("address", grpcAddress, "the server address")
 
 	conn, err := grpc.Dial(*serverAddress, grpc.WithInsecure())
 	if err != nil {

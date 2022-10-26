@@ -1,25 +1,20 @@
-FROM golang:alpine as builder
+FROM golang:1.19.2-alpine3.16 AS builder
 
-WORKDIR /go/src/app
-
-ENV GO111MODULE=on
-
-RUN go get github.com/alikan97/Go-GRPC
-
-COPY go.mod .
-COPY go.sum .
-
-RUN go mod download
+RUN apk update \
+    && apk add openssl
+    
+WORKDIR /app
 
 COPY . .
 
-RUN go build -o ./run .
+RUN go build -o ./out .
 
 FROM alpine:latest
+WORKDIR /app
 
-RUN apk --no-cache add ca-certification
-WORKDIR /root/
+RUN apk --no-cache add ca-certificates
+COPY --from=builder /app/out .
+COPY --from=builder /app/keyfiles .
 
-COPY --from=builder /go/src/app/run .
-EXPOSE 8080
-CMD [ "./run" ]
+EXPOSE 8081
+CMD ["./out"]
