@@ -4,9 +4,7 @@ RUN apk update \
     && apk add openssl
     
 WORKDIR /app
-
 COPY . .
-
 RUN go build -o ./out .
 
 FROM alpine:latest

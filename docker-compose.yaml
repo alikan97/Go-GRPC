@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8081"
+    environment:
+      - GRPC_SERVER_ADDRESS=angry_brattain:8080
+      - HANDLER_TIMEOUT=3
+      - REDIS_PORT=6379
+      - REDIS_HOST=host.docker.internal
+      - REFRESH_TOKEN_EXP=259200
+      - ID_TOKEN_EXP=3600
+      - PUB_KEY_FILE=./rsa_public.pem
+      - PRIV_KEY_FILE=./rsa_private.pem
+      - REFRESH_SECRET=<:>thisismysecretkey223344&&$$!?<
+      - BASE_URL=/api
+      - PG_HOST=host.docker.internal
+      - PG_USER=postgres
+      - PG_PORT=5432
+      - PG_PASS=abcd1234
+      - PG_DB=postgres
