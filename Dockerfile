@@ -15,5 +15,7 @@ COPY --from=builder /app/out .
 COPY --from=builder /app/keyfiles .
 COPY .env .
 
+RUN echo $(ls)
+
 EXPOSE 8081
 CMD ["./out"]
