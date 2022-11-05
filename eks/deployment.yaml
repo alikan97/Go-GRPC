@@ -20,3 +20,24 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 8081
+        env:
+          - name: REDIS_HOST
+            value: redis-master
+          - name: REDIS_PORT
+            value: "6379"
+          - name: PRIV_KEY_FILE
+            value: ./rsa_private.pem
+          - name: PUB_KEY_FILE
+            value: ./rsa_public.pem
+          - name: ID_TOKEN_EXP
+            value: "3600"
+          - name: REFRESH_TOKEN_EXP
+            value: "259200"
+          - name: BASE_URL
+            value: /api
+          - name: REFRESH_SECRET
+            value: <:>thisismysecretkey223344&&$$!?<
+          - name: HANDLER_TIMEOUT
+            value: "3"
+          - name: GRPC_SERVER_ADDRESS
+            value: angry_brattain:8080

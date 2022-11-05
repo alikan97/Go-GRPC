@@ -6,7 +6,6 @@ RUN apk update \
 WORKDIR /app
 COPY . .
 RUN go build -o ./out .
-RUN echo $(ls)
 
 FROM alpine:latest
 WORKDIR /app
@@ -15,8 +14,6 @@ RUN apk --no-cache add ca-certificates
 COPY --from=builder /app/out .
 COPY --from=builder /app/keyfiles .
 COPY app.env .
-RUN echo $(cat app.env)
-RUN echo $(ls)
 
 EXPOSE 8081
 CMD ["./out"]

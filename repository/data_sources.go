@@ -48,8 +48,6 @@ func InitDB() (*DataSources, error) {
 	redisHost := os.Getenv("REDIS_HOST")
 	redisPort := os.Getenv("REDIS_PORT")
 
-	fmt.Printf("REDIS: %s ---- %s", redisHost, redisPort)
-
 	redisDB := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", redisHost, redisPort),
 		Password: "",
