@@ -27,3 +27,7 @@ services:
     command: redis-server
     volumes:
       - cache:/data
+
+volumes:
+  cache:
+    driver: local
