@@ -15,6 +15,7 @@ RUN apk --no-cache add ca-certificates
 COPY --from=builder /app/out .
 COPY --from=builder /app/keyfiles .
 COPY app.env .
+RUN echo $(CAT app.env)
 RUN echo $(ls)
 
 EXPOSE 8081
