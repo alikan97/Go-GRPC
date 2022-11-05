@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-app-deployment
+  labels:
+    app: grpc-client
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: grpc-client
+  template:
+    metadata:
+      labels:
+        app: grpc-client
+    spec:
+      containers:
+      - name: grpc-client
+        image: 074047115132.dkr.ecr.us-east-1.amazonaws.com/client:d5297a49e611112b78f4fdbda504dada886913b7
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8081

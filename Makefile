@@ -20,7 +20,7 @@ new-migration:
 # migrate:
 # 	migrate -source file://migrations/ -database "postgres://postgres:abcd1234@localhost:$(PORT)/Crypto?sslmode=disable" -verbose up
 migrate-up:
-	migrate -source file://migrations/ -database postgres://postgres:abcd1234@localhost:$(PORT)/postgres?sslmode=disable up
+	migrate -source file://migrations/ -database "postgres://postgres:$(PWD)@crypto.c2f0vwowpfvy.us-east-1.rds.amazonaws.com:$(PORT)/postgres?sslmode=disable" up
 
 swagger:
 	GO111MODULE=off swagger generate spec -o ./swagger.yaml --scan-models
