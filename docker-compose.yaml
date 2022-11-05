@@ -11,8 +11,8 @@ services:
     environment:
       - GRPC_SERVER_ADDRESS=angry_brattain:8080
       - HANDLER_TIMEOUT=3
-      - REDIS_PORT=cache
-      - REDIS_HOST=host.docker.internal
+      - REDIS_PORT=6379
+      - REDIS_HOST=cache
       - REFRESH_TOKEN_EXP=259200
       - ID_TOKEN_EXP=3600
       - PUB_KEY_FILE=./rsa_public.pem
@@ -24,6 +24,7 @@ services:
       - PG_PORT=5432
       - PG_PASS=abcd1234
       - PG_DB=postgres
+  
   cache:
     image: redis:7.0.5-alpine
     restart: always
