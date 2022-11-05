@@ -30,7 +30,7 @@ func InitDB() (*DataSources, error) {
 	pgDB := os.Getenv("PG_DB")
 
 	pgConnString := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", pgHost, pgPort, pgUser, pgPass, pgDB)
-
+	fmt.Printf(pgConnString)
 	log.Printf("Connecting to db...")
 	db, err := sqlx.Open("postgres", pgConnString)
 
