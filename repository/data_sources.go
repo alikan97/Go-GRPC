@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -18,11 +19,13 @@ type DataSources struct {
 
 func InitDB() (*DataSources, error) {
 	log.Printf("Initializing data sources\n")
-	// envFile, errs := godotenv.Read(".env")
+	envFile, errs := godotenv.Read(".env")
 
-	// if errs != nil {
-	// 	fmt.Printf("Error reading in env file, %s: %v", envFile["PG_HOST"], errs)
-	// }
+	if errs != nil {
+		fmt.Printf("Error reading in env file, %s: %v", envFile["PG_HOST"], errs)
+	}
+	fmt.Printf(envFile["PG_HOST"])
+
 	pgHost := os.Getenv("PG_HOST")
 	pgPort := os.Getenv("PG_PORT")
 	pgUser := os.Getenv("PG_USER")
