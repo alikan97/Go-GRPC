@@ -19,7 +19,7 @@ type DataSources struct {
 
 func InitDB() (*DataSources, error) {
 	log.Printf("Initializing data sources\n")
-	envFile, errs := godotenv.Read(".env")
+	envFile, errs := godotenv.Read("app.env")
 
 	if errs != nil {
 		fmt.Printf("Error reading in env file, %s: %v", envFile["PG_HOST"], errs)
