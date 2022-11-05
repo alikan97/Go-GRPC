@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
@@ -24,16 +23,15 @@ func InitDB() (*DataSources, error) {
 	if errs != nil {
 		fmt.Printf("Error reading in env file, %s: %v", envFile["PG_HOST"], errs)
 	}
-	fmt.Printf(envFile["PG_HOST"])
 
-	pgHost := os.Getenv("PG_HOST")
-	pgPort := os.Getenv("PG_PORT")
-	pgUser := os.Getenv("PG_USER")
-	pgPass := os.Getenv("PG_PASS")
-	pgDB := os.Getenv("PG_DB")
+	pgHost := envFile["PG_HOST"]
+	pgPort := envFile["PG_PORT"]
+	pgUser := envFile["PG_USER"]
+	pgPass := envFile["PG_PASS"]
+	pgDB := envFile["PG_DB"]
 
 	pgConnString := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", pgHost, pgPort, pgUser, pgPass, pgDB)
-	fmt.Printf(pgConnString)
+
 	log.Printf("Connecting to db...")
 	db, err := sqlx.Open("postgres", pgConnString)
 
@@ -45,8 +43,8 @@ func InitDB() (*DataSources, error) {
 		return nil, fmt.Errorf("error connecting to db: %w", err)
 	}
 
-	redisHost := os.Getenv("REDIS_HOST")
-	redisPort := os.Getenv("REDIS_PORT")
+	redisHost := envFile["REDIS_HOST"]
+	redisPort := envFile["REDIS_PORT"]
 
 	redisDB := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", redisHost, redisPort),
