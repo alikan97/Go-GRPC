@@ -19,12 +19,6 @@ services:
       - PRIV_KEY_FILE=./rsa_private.pem
       - REFRESH_SECRET=<:>thisismysecretkey223344&&$$!?<
       - BASE_URL=/api
-      - PG_HOST=host.docker.internal
-      - PG_USER=postgres
-      - PG_PORT=5432
-      - PG_PASS=abcd1234
-      - PG_DB=postgres
-  
   cache:
     image: redis:7.0.5-alpine
     restart: always
