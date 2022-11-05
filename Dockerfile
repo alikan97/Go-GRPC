@@ -14,7 +14,7 @@ WORKDIR /app
 RUN apk --no-cache add ca-certificates
 COPY --from=builder /app/out .
 COPY --from=builder /app/keyfiles .
-COPY --from=builder app.env .
+COPY app.env .
 RUN echo $(ls)
 
 EXPOSE 8081
