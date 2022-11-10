@@ -17,15 +17,11 @@ run:
 new-migration:
 	migrate create -ext sql -dir migrations/ -seq -digits 5 $(filename)
 
-# migrate:
-# 	migrate -source file://migrations/ -database "postgres://postgres:abcd1234@localhost:$(PORT)/Crypto?sslmode=disable" -verbose up
 migrate-up:
 	migrate -source file://migrations/ -database "postgres://postgres:$(PWD)@crypto.c2f0vwowpfvy.us-east-1.rds.amazonaws.com:$(PORT)/postgres?sslmode=disable" up
 
 swagger:
 	GO111MODULE=off swagger generate spec -o ./swagger.yaml --scan-models
-
-## export PATH=$PATH:/usr/local/go/bin
 
 create-keypair:
 	@echo "Creating an rsa 256 key pair"
