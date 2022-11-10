@@ -39,5 +39,3 @@ spec:
             value: <:>thisismysecretkey223344&&$$!?<
           - name: HANDLER_TIMEOUT
             value: "3"
-          - name: GRPC_SERVER_ADDRESS
-            value: angry_brattain:8080
