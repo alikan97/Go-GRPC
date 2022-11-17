@@ -14,7 +14,7 @@ func (h *Handler) GetAllAssets(c *gin.Context) {
 	resp, err := h.Client.GetAllAsset(c, &emptypb.Empty{})
 
 	if err != nil {
-		fmt.Printf("Fucked it %v", err)
+		fmt.Printf("ccc it %v", err)
 	}
 
 	respContent := resp.GetResponse()

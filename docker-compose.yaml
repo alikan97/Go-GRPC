@@ -19,14 +19,14 @@ services:
     environment:
       - GRPC_SERVER_ADDRESS=
       - HANDLER_TIMEOUT=3
-      - REDIS_PORT=6379
-      - REDIS_HOST=cache
+      - REDIS_PORT=
+      - REDIS_HOST=
       - REFRESH_TOKEN_EXP=259200
       - ID_TOKEN_EXP=3600
-      - PUB_KEY_FILE=./rsa_public.pem
-      - PRIV_KEY_FILE=./rsa_private.pem
-      - REFRESH_SECRET=<:>thisismysecretkey223344&&$$!?<
-      - BASE_URL=/api
+      - PUB_KEY_FILE=
+      - PRIV_KEY_FILE=
+      - REFRESH_SECRET=
+      - BASE_URL=
 volumes:
   cache:
     driver: local

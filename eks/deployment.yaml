@@ -16,26 +16,26 @@ spec:
     spec:
       containers:
       - name: grpc-client
-        image: 074047115132.dkr.ecr.us-east-1.amazonaws.com/client:latest
+        image: ""
         imagePullPolicy: Always
         ports:
         - containerPort: 8081
         env:
           - name: REDIS_HOST
-            value: redis-master
+            value: ""
           - name: REDIS_PORT
-            value: "6379"
+            value: ""
           - name: PRIV_KEY_FILE
-            value: ./rsa_private.pem
+            value: ""
           - name: PUB_KEY_FILE
-            value: ./rsa_public.pem
+            value: ""
           - name: ID_TOKEN_EXP
             value: "3600"
           - name: REFRESH_TOKEN_EXP
             value: "259200"
           - name: BASE_URL
-            value: /api
+            value: ""
           - name: REFRESH_SECRET
-            value: <:>thisismysecretkey223344&&$$!?<
+            value: ""
           - name: HANDLER_TIMEOUT
             value: "3"
